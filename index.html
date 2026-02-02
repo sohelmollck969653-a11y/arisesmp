@@ -3,139 +3,1524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISE SMP Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
+    <title>ARISE SMP - Gaming Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; text-align: center; padding: 20px; margin: 0; }
-        .card { background: #1a1a2e; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        
-        /* Status Styles */
-        .status-box { padding: 12px; border-radius: 12px; font-weight: bold; margin: 15px 0; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .online { background-color: #2ecc71; color: white; }
-        .offline { background-color: #e74c3c; color: white; }
-        .queue { background-color: #f39c12; color: white; }
-        
-        .btn { 
-            background-color: #4ecca3; color: #1a1a2e; padding: 15px; 
-            text-decoration: none; font-weight: bold; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin: 10px 0; transition: 0.3s; cursor: pointer; border: none; width: 100%; font-size: 16px;
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .discord-btn { background-color: #7289da; color: white; margin-top: 15px; }
-        
-        /* Guide Design Fixed (Steps with Yellow Border) */
-        .guide-container { display: none; margin-top: 20px; }
-        .guide-step { 
-            text-align: left; background: #16213e; padding: 15px; border-radius: 12px; 
-            margin-bottom: 12px; border-left: 4px solid #f39c12; 
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #b967ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff9d;
+            --neon-yellow: #ffd700;
+            --glass-bg: rgba(15, 15, 35, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --dark-bg: #0a0a1a;
+            --darker-bg: #050510;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0ff;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --pulse: pulse 2s infinite;
         }
-        .guide-step b { color: white; display: block; margin-bottom: 5px; font-size: 16px; }
-        .guide-step p { margin: 0; font-size: 14px; color: #ccc; line-height: 1.4; }
 
-        iframe { border-radius: 15px; margin-top: 15px; border: none; width: 100%; height: 250px; }
-        h2, h3 { color: #4ecca3; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .discord-text { margin-top: 15px; font-size: 14px; color: #bbb; }
-    </style>
-</head>
-<body>
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
 
-    <div class="card">
-        <h2><i class="fas fa-gamepad"></i> ARISE SMP</h2>
-        <div id="statusIndicator" class="status-box offline">
-            <i class="fas fa-sync fa-spin"></i> CHECKING...
-        </div>
-        <p id="playerInfo"><i class="fas fa-users"></i> Players Online: <span id="playerCount">0 / 10</span></p>
-        
-        <a href="https://aternos.org/server/" target="_system" class="btn">
-            <i class="fas fa-server"></i> GO TO ATERNOS DASHBOARD
-        </a>
-        
-        <button class="btn" onclick="toggleTutorial()" style="background-color: #f39c12; color: white;">
-            <i class="fas fa-book-open"></i> HOW TO CREATE ACCOUNT?
-        </button>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
-        <div id="tutorialSection" class="guide-container">
-            <h3 style="color: #f39c12; margin-bottom: 20px;">Aternos Account Guide</h3>
-            
-            <div class="guide-step">
-                <b>Step 1: Website Open Kare</b>
-                <p>Dashboard button par click karke "Play" dabayein.</p>
-            </div>
-            <div class="guide-step">
-                <b>Step 2: Sign Up Kare</b>
-                <p>Naya account banane ke liye "Sign Up" button par click karein.</p>
-            </div>
-            <div class="guide-step">
-                <b>Step 3: Username aur Terms</b>
-                <p>Apna ek unique Username likhein aur dono boxes ko tick (✓) karke Next kare.</p>
-            </div>
-            <div class="guide-step">
-                <b>Step 4: Password Set Kare</b>
-                <p>Ek achha password banayein jo aapko yaad rahe.</p>
-            </div>
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
+            50% { text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue), 0 0 40px var(--neon-blue); }
+        }
 
-            <button class="btn" onclick="toggleTutorial()" style="background-color: #e74c3c; color: white; margin-top: 10px;">
-                <i class="fas fa-times-circle"></i> CLOSE GUIDE
-            </button>
-        </div>
-    </div>
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
 
-    <div class="card" style="border-top: 4px solid #7289da;">
-        <h3><i class="fab fa-discord"></i> Community Chat</h3>
-        <p class="discord-text">Join our Discord community 🌐✨!</p>
-        <a href="https://discord.gg/kYQvV5RRDu" target="_blank" class="btn discord-btn">
-            <i class="fab fa-discord"></i> JOIN DISCORD SERVER
-        </a>
-        <iframe src="https://discord.com/widget?id=1451867169381158965&theme=dark" allowtransparency="true" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-    </div>
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Exo 2', sans-serif;
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    <script>
-        // Sahi IP aapke latest screenshot ke mutabik
-        const serverIP = "ARISE_smp303.aternos.me";
-        const serverPort = "18828";
+        /* Gaming Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(185, 103, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
 
-        async function checkStatus() {
-            try {
-                const response = await fetch(`https://api.mcsrvstat.us/2/${serverIP}:${serverPort}?t=${Date.now()}`);
-                const data = await response.json();
-                
-                const statusDiv = document.getElementById('statusIndicator');
-                const playersSpan = document.getElementById('playerCount');
-                const playerInfo = document.getElementById('playerInfo');
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 243, 255, 0.5), transparent);
+            z-index: 999;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
 
-                if (data.online === true) {
-                    // Status: Online
-                    statusDiv.innerHTML = '<i class="fas fa-circle-check"></i> ● SERVER ONLINE';
-                    statusDiv.className = "status-box online";
-                    playersSpan.innerHTML = data.players.online + " / " + data.players.max;
-                    playerInfo.innerHTML = `<i class="fas fa-users"></i> Players Online: <span id="playerCount">${data.players.online} / ${data.players.max}</span>`;
-                } 
-                else if (data.debug && data.debug.ping === false && data.map === "Waiting in queue") {
-                    // Status: Waiting in Queue
-                    statusDiv.innerHTML = '<i class="fas fa-clock fa-spin"></i> WAITING IN QUEUE';
-                    statusDiv.className = "status-box queue";
-                    playerInfo.innerHTML = `<i class="fas fa-hourglass-half"></i> Est. Time: ~13 min (Check Aternos)`; 
-                }
-                else {
-                    // Status: Offline
-                    statusDiv.innerHTML = '<i class="fas fa-circle-xmark"></i> ○ SERVER OFFLINE';
-                    statusDiv.className = "status-box offline";
-                    playerInfo.innerHTML = '<i class="fas fa-users"></i> Players Online: <span id="playerCount">0 / 10</span>';
-                }
-            } catch (error) {
-                console.log("Status Error");
+        .particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header - Gaming Style */
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(10, 10, 26, 0.8) 0%, transparent 100%);
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glow 3s infinite alternate;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            border-radius: 3px;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 25px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .server-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 50px;
+            padding: 12px 25px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .server-badge:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .server-badge i {
+            color: var(--neon-blue);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .server-ip {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Glassmorphism Cards */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(185, 103, 255, 0.05));
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 243, 255, 0.2);
+            border-color: rgba(0, 243, 255, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Card Header with Neon Effect */
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), transparent);
+            border-radius: 3px;
+        }
+
+        .card-header i {
+            font-size: 2rem;
+            margin-right: 20px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        .card-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-blue), var(--text-primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        /* Server Status - Gaming Style */
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .status-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .status-online {
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green);
+            animation: var(--pulse);
+        }
+
+        .status-offline {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .status-queue {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 20px var(--neon-yellow);
+            animation: var(--pulse);
+        }
+
+        .status-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .server-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 18px 25px;
+            border-radius: 15px;
+            min-width: 160px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 243, 255, 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        /* Player List */
+        .player-list {
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .player-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .player-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .player-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 10px;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--neon-blue);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .player-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.1);
+        }
+
+        .player-item:hover::before {
+            left: 100%;
+        }
+
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Rules & News with Neon Highlights */
+        .rules-list {
+            list-style: none;
+        }
+
+        .rule-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            transition: var(--transition);
+        }
+
+        .rule-item:hover {
+            padding-left: 10px;
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-item i {
+            color: var(--neon-green);
+            margin-right: 15px;
+            margin-top: 5px;
+            text-shadow: 0 0 8px var(--neon-green);
+            filter: drop-shadow(0 0 3px currentColor);
+        }
+
+        .news-content {
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .news-date {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(185, 103, 255, 0.3);
+        }
+
+        .news-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--neon-yellow), var(--neon-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Discord Widget */
+        .discord-widget {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            border: 2px solid rgba(88, 101, 242, 0.3);
+            box-shadow: 0 0 20px rgba(88, 101, 242, 0.2);
+        }
+
+        .discord-widget iframe {
+            border-radius: 10px;
+        }
+
+        /* Neon Glow Buttons */
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066ff, #00ccff);
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.3), 0 0 30px rgba(0, 204, 255, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 102, 255, 0.4), 0 0 40px rgba(0, 204, 255, 0.7);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #5865F2, #7289da);
+            color: white;
+            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3), 0 0 30px rgba(114, 137, 218, 0.5);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(88, 101, 242, 0.4), 0 0 40px rgba(114, 137, 218, 0.7);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff8c00, #ffd700);
+            color: white;
+            box-shadow: 0 10px 20px rgba(255, 140, 0, 0.3), 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 140, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.7);
+        }
+
+        .btn i {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px white);
+        }
+
+        /* Guide Sections */
+        .guides-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1100px) {
+            .guides-container {
+                grid-template-columns: 1fr;
             }
         }
 
-        function toggleTutorial() {
-            var x = document.getElementById("tutorialSection");
-            x.style.display = (x.style.display === "none" || x.style.display === "") ? "block" : "none";
-            if(x.style.display === "block") x.scrollIntoView({behavior: "smooth"});
+        .guide-container {
+            margin-bottom: 20px;
         }
 
-        setInterval(checkStatus, 15000); // 15 seconds refresh
-        checkStatus();
+        .guide-toggle {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(185, 103, 255, 0.1));
+            backdrop-filter: blur(15px);
+            color: white;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .guide-toggle:hover {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(185, 103, 255, 0.2));
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .guide-toggle i {
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .guide-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .guide-content {
+            background: rgba(10, 10, 35, 0.8);
+            backdrop-filter: blur(15px);
+            border-left: 5px solid var(--neon-yellow);
+            border-radius: 0 0 15px 15px;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            margin-top: -10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-top: none;
+            position: relative;
+            z-index: 0;
+        }
+
+        .guide-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), transparent);
+            z-index: -1;
+        }
+
+        .guide-content.active {
+            padding: 40px;
+            max-height: 2000px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .guide-step {
+            display: flex;
+            margin-bottom: 35px;
+            padding-bottom: 35px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            align-items: flex-start;
+        }
+
+        .guide-step:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-yellow), #ff8c00);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin-right: 25px;
+            flex-shrink: 0;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 20px var(--neon-yellow);
+            position: relative;
+        }
+
+        .step-number::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-yellow);
+            opacity: 0.5;
+            animation: var(--pulse);
+        }
+
+        .step-content h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Screenshot Container */
+        .screenshot-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .screenshot {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(0, 243, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .screenshot:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 243, 255, 0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .screenshot-img {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(185, 103, 255, 0.1));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-blue);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .screenshot-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 0;
+            border-top: 1px solid rgba(0, 243, 255, 0.2);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            border-radius: 3px;
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .update-status {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            padding: 10px 25px;
+            border-radius: 30px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        /* Loading & Error States */
+        .loading, .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--neon-blue);
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .header h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .buttons-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .server-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .guide-step {
+                flex-direction: column;
+            }
+            
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .guides-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 18px 25px;
+                font-size: 1rem;
+            }
+            
+            .status-text {
+                font-size: 1.8rem;
+            }
+            
+            .guide-content.active {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Gaming Effects -->
+    <div class="scanline"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-gamepad"></i> ARISE SMP PORTAL</h1>
+            <p class="subtitle">ENTER THE REALM • CONNECT • SURVIVE • THRIVE • EMBARK ON AN EPIC JOURNEY</p>
+            <div class="server-badge">
+                <i class="fas fa-globe"></i>
+                <span class="server-ip">ARISE_smp303.aternos.me:18828</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Server Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-satellite-dish"></i>
+                    <h2>SERVER STATUS</h2>
+                </div>
+                <div class="status-container">
+                    <div class="status-icon">
+                        <i class="fas fa-sync fa-spin"></i>
+                    </div>
+                    <div class="status-text">SYNCING...</div>
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>ESTABLISHING CONNECTION TO SERVER...</p>
+                    </div>
+                    <div class="server-info" style="display: none;">
+                        <div class="info-box">
+                            <div class="info-label">ACTIVE PLAYERS</div>
+                            <div class="info-value" id="player-count">0/20</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-label">SERVER VERSION</div>
+                            <div class="info-value" id="server-version">LOADING...</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-label">LATENCY</div>
+                            <div class="info-value" id="server-latency">-- MS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player List Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users"></i>
+                    <h2>ONLINE PLAYERS</h2>
+                </div>
+                <div class="player-list" id="player-list">
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>SCANNING FOR ACTIVE PLAYERS...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discord Widget Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fab fa-discord"></i>
+                    <h2>DISCORD SERVER</h2>
+                </div>
+                <div class="discord-widget">
+                    <iframe src="https://discord.com/widget?id=1451867169381158965&theme=dark" width="100%" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="https://discord.gg/BDRdG4X8w3" target="_blank" class="btn btn-secondary" style="padding: 12px 25px; font-size: 1rem;">
+                        <i class="fab fa-discord"></i>
+                        JOIN DISCORD SERVER
+                    </a>
+                </div>
+            </div>
+
+            <!-- Server Rules Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-book"></i>
+                    <h2>SERVER RULES</h2>
+                </div>
+                <ul class="rules-list">
+                    <li class="rule-item">
+                        <i class="fas fa-ban"></i>
+                        <span><strong>NO GRIEFING:</strong> Respect other players' builds and creations.</span>
+                    </li>
+                    <li class="rule-item">
+                        <i class="fas fa-handshake"></i>
+                        <span><strong>RESPECT EVERYONE:</strong> Maintain a friendly and inclusive environment.</span>
+                    </li>
+                    <li class="rule-item">
+                        <i class="fas fa-lock"></i>
+                        <span><strong>NO STEALING:</strong> Do not take items from others without permission.</span>
+                    </li>
+                    <li class="rule-item">
+                        <i class="fas fa-comments"></i>
+                        <span><strong>KEEP CHAT FRIENDLY:</strong> No harassment, hate speech, or spam.</span>
+                    </li>
+                    <li class="rule-item">
+                        <i class="fas fa-bug"></i>
+                        <span><strong>NO CHEATING:</strong> Do not use hacked clients, x-ray, or exploits.</span>
+                    </li>
+                    <li class="rule-item">
+                        <i class="fas fa-heart"></i>
+                        <span><strong>HELP NEW PLAYERS:</strong> Welcome newcomers and help them get started.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- News & Updates Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-newspaper"></i>
+                    <h2>SERVER NEWS</h2>
+                </div>
+                <div class="news-content">
+                    <span class="news-date" id="current-date"></span>
+                    <h3>ARISE SMP SEASON 4 NOW LIVE!</h3>
+                    <p>We're excited to announce the launch of Season 4 with incredible new features:</p>
+                    <ul style="padding-left: 25px; margin: 15px 0; color: var(--text-secondary);">
+                        <li><strong>New World Generation:</strong> Custom biomes and structures</li>
+                        <li><strong>Enhanced Economy:</strong> Player-run shops with custom currency</li>
+                        <li><strong>Weekly Events:</strong> PvP tournaments, building contests, and treasure hunts</li>
+                        <li><strong>Custom Mobs:</strong> Exclusive mobs with unique drops</li>
+                        <li><strong>Quality of Life:</strong> Improved performance and reduced lag</li>
+                    </ul>
+                    <p style="margin-top: 20px;">Join our Discord server for real-time updates, event schedules, and to connect with the community.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="buttons-container">
+            <a href="https://aternos.org/go/" target="_blank" class="btn btn-primary">
+                <i class="fas fa-external-link-alt"></i>
+                ATERNOS DASHBOARD
+            </a>
+            <a href="https://discord.gg/BDRdG4X8w3" target="_blank" class="btn btn-secondary">
+                <i class="fab fa-discord"></i>
+                JOIN DISCORD SERVER
+            </a>
+            <button id="minecraft-guide-toggle" class="btn btn-warning">
+                <i class="fas fa-info-circle"></i>
+                HOW TO JOIN SERVER
+            </button>
+        </div>
+
+        <!-- Guides Section -->
+        <div class="guides-container">
+            <!-- Minecraft Account Guide -->
+            <div class="guide-container">
+                <button class="guide-toggle" id="minecraft-guide-btn">
+                    <span><i class="fas fa-user-plus"></i> HOW TO CREATE MINECRAFT ACCOUNT</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="guide-content" id="minecraft-guide-content">
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>VISIT MINECRAFT WEBSITE</h4>
+                            <p>Go to the official Minecraft website (minecraft.net) and click on "Get Minecraft".</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>CHOOSE JAVA EDITION</h4>
+                            <p>Select Minecraft Java Edition (this is required for our server). Click "Buy Now" and complete the purchase.</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>CREATE MICROSOFT ACCOUNT</h4>
+                            <p>You'll need a Microsoft account to play. If you don't have one, create it during the setup process.</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>DOWNLOAD & INSTALL</h4>
+                            <p>Download the Minecraft Launcher and install it on your computer. Log in with your Microsoft account.</p>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>ADD SERVER & JOIN</h4>
+                            <p>In Minecraft, go to Multiplayer → Add Server. Enter: <strong style="color: var(--neon-green);">ARISE_smp303.aternos.me:18828</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aternos Account Guide -->
+            <div class="guide-container">
+                <button class="guide-toggle" id="aternos-guide-btn">
+                    <span><i class="fas fa-server"></i> HOW TO CREATE ATERNOS ACCOUNT</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="guide-content" id="aternos-guide-content">
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>GO TO ATERNOS WEBSITE</h4>
+                            <p>Visit aternos.org in your web browser. Click on the "Register" button at the top right corner.</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-mouse-pointer"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 1: Click Register</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>FILL REGISTRATION FORM</h4>
+                            <p>Enter your email address, choose a username and password. Accept the terms and conditions.</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 2: Fill Details</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>VERIFY YOUR EMAIL</h4>
+                            <p>Check your email inbox for a verification link from Aternos. Click the link to verify your account.</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 3: Verify Email</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>LOGIN & CREATE SERVER</h4>
+                            <p>After verification, log in to Aternos. Click "Create Server" and choose Minecraft Java Edition.</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 4: Create Server</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>CONFIGURE SERVER SETTINGS</h4>
+                            <p>Customize your server settings (name, version, gamemode). Click "Create" and wait for setup to complete.</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 5: Configure Settings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>START YOUR SERVER</h4>
+                            <p>Go to your server dashboard and click "Start". Wait for it to fully load, then share the IP with friends!</p>
+                            <div class="screenshot-container">
+                                <div class="screenshot">
+                                    <div class="screenshot-img">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <div class="screenshot-label">Step 6: Start Server</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">ARISE SMP PORTAL v4.0</div>
+            <p>© 2025 ARISE SMP COMMUNITY • CRAFTED WITH PASSION FOR THE MINECRAFT COMMUNITY</p>
+            <div class="update-status">
+                <i class="fas fa-sync-alt"></i> LAST SYNC: <span id="last-updated">--:--:--</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Server configuration
+        const SERVER_IP = "ARISE_smp303.aternos.me";
+        const SERVER_PORT = "18828";
+        const API_URL = `https://api.mcsrvstat.us/3/${SERVER_IP}:${SERVER_PORT}`;
+
+        // DOM Elements
+        const statusContainer = document.querySelector('.status-container');
+        const statusIcon = document.querySelector('.status-icon i');
+        const statusText = document.querySelector('.status-text');
+        const playerCount = document.getElementById('player-count');
+        const serverVersion = document.getElementById('server-version');
+        const serverLatency = document.getElementById('server-latency');
+        const playerList = document.getElementById('player-list');
+        const serverInfo = document.querySelector('.server-info');
+        const lastUpdated = document.getElementById('last-updated');
+        const currentDate = document.getElementById('current-date');
+        
+        // Guide toggles
+        const minecraftGuideBtn = document.getElementById('minecraft-guide-btn');
+        const minecraftGuideContent = document.getElementById('minecraft-guide-content');
+        const aternosGuideBtn = document.getElementById('aternos-guide-btn');
+        const aternosGuideContent = document.getElementById('aternos-guide-content');
+        
+        // Set current date
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        currentDate.textContent = today.toLocaleDateString('en-US', options);
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size and position
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random color
+                const colors = ['#00f3ff', '#b967ff', '#ff00ff', '#00ff9d', '#ffd700'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Toggle guide visibility function
+        function toggleGuide(button, content) {
+            button.addEventListener('click', () => {
+                const isActive = content.classList.contains('active');
+                
+                // Close all guides first
+                document.querySelectorAll('.guide-content').forEach(guide => {
+                    guide.classList.remove('active');
+                });
+                document.querySelectorAll('.guide-toggle').forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+                
+                // If the clicked guide wasn't active, open it
+                if (!isActive) {
+                    content.classList.add('active');
+                    button.classList.add('active');
+                }
+            });
+        }
+
+        // Initialize guide toggles
+        toggleGuide(minecraftGuideBtn, minecraftGuideContent);
+        toggleGuide(aternosGuideBtn, aternosGuideContent);
+
+        // Fetch server status with cache-busting and error handling
+        async function fetchServerStatus() {
+            try {
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${API_URL}?t=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error(`API ERROR: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                updateServerStatus(data);
+                updateLastUpdatedTime();
+            } catch (error) {
+                console.error('Server status fetch failed:', error);
+                showErrorStatus();
+            }
+        }
+
+        // Update server status display with proper error handling
+        function updateServerStatus(data) {
+            // Hide loading indicator
+            const loadingElement = statusContainer.querySelector('.loading');
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+            
+            // Show server info
+            serverInfo.style.display = 'flex';
+            
+            // Check if server is online
+            if (data.online) {
+                // Server is online
+                statusIcon.className = "fas fa-check-circle status-online";
+                statusText.textContent = "ONLINE";
+                statusText.style.color = "#00ff9d";
+                
+                // Update player count
+                const players = data.players || { online: 0, max: 20 };
+                playerCount.textContent = `${players.online}/${players.max}`;
+                
+                // Update server version
+                serverVersion.textContent = data.version || "1.19+";
+                
+                // Update latency if available
+                if (data.debug && data.debug.ping) {
+                    serverLatency.textContent = `${data.debug.ping} MS`;
+                } else {
+                    serverLatency.textContent = "-- MS";
+                }
+                
+                // Update player list
+                updatePlayerList(data.players);
+            } else {
+                // Server is offline
+                statusIcon.className = "fas fa-times-circle status-offline";
+                statusText.textContent = "OFFLINE";
+                statusText.style.color = "#ff00ff";
+                
+                // Check if server is in queue (Aternos specific)
+                if (SERVER_IP.includes("aternos")) {
+                    statusText.textContent = "IN QUEUE";
+                    statusIcon.className = "fas fa-clock status-queue";
+                    statusText.style.color = "#ffd700";
+                }
+                
+                // Reset player info
+                playerCount.textContent = "0/20";
+                serverVersion.textContent = "OFFLINE";
+                serverLatency.textContent = "-- MS";
+                
+                // Clear player list
+                playerList.innerHTML = '<div class="player-item"><div class="player-avatar">?</div><div class="player-name">SERVER IS OFFLINE • CHECK BACK SOON</div></div>';
+            }
+        }
+
+        // Update player list with proper data handling
+        function updatePlayerList(playersData) {
+            if (!playersData || !playersData.list || playersData.list.length === 0) {
+                playerList.innerHTML = '<div class="player-item"><div class="player-avatar">?</div><div class="player-name">NO PLAYERS ONLINE</div></div>';
+                return;
+            }
+            
+            let playersHTML = '';
+            
+            // Check if players.list is an array of objects or strings
+            if (typeof playersData.list[0] === 'object' && playersData.list[0].name) {
+                // Array of objects with name property
+                playersData.list.forEach(playerObj => {
+                    const playerName = playerObj.name;
+                    addPlayerToHTML(playerName);
+                });
+            } else if (typeof playersData.list[0] === 'string') {
+                // Array of strings
+                playersData.list.forEach(playerName => {
+                    addPlayerToHTML(playerName);
+                });
+            }
+            
+            function addPlayerToHTML(playerName) {
+                // Generate a color based on player name
+                const colors = ["#00f3ff", "#b967ff", "#00ff9d", "#ffd700", "#ff00ff"];
+                const colorIndex = playerName.length % colors.length;
+                const avatarColor = colors[colorIndex];
+                const firstLetter = playerName.charAt(0).toUpperCase();
+                
+                playersHTML += `
+                    <div class="player-item">
+                        <div class="player-avatar" style="background: linear-gradient(135deg, ${avatarColor}, ${colors[(colorIndex + 1) % colors.length]});">${firstLetter}</div>
+                        <div class="player-name">${playerName}</div>
+                    </div>
+                `;
+            }
+            
+            playerList.innerHTML = playersHTML;
+        }
+
+        // Show error status
+        function showErrorStatus() {
+            statusIcon.className = "fas fa-exclamation-triangle status-queue";
+            statusText.textContent = "CONNECTION ERROR";
+            statusText.style.color = "#ffd700";
+            
+            // Hide loading and show error
+            const loadingElement = statusContainer.querySelector('.loading');
+            if (loadingElement) {
+                loadingElement.innerHTML = '<div class="error"><i class="fas fa-exclamation-triangle"></i><p>NETWORK ERROR • RETRYING CONNECTION...</p></div>';
+            }
+        }
+
+        // Update last updated time
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            lastUpdated.textContent = timeString;
+            
+            // Add a visual effect
+            lastUpdated.style.color = "#00ff9d";
+            setTimeout(() => {
+                lastUpdated.style.color = "#ffffff";
+            }, 1000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create particles
+            createParticles();
+            
+            // Initial fetch
+            fetchServerStatus();
+            
+            // Refresh server status every 30 seconds
+            setInterval(fetchServerStatus, 30000);
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'g' || e.key === 'G') {
+                    minecraftGuideBtn.click();
+                }
+                if (e.key === 'a' || e.key === 'A') {
+                    aternosGuideBtn.click();
+                }
+                if (e.key === 'r' || e.key === 'R') {
+                    fetchServerStatus();
+                }
+            });
+            
+            // Add click effects to buttons
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+            
+            // Optimize Discord links for app opening
+            const discordLinks = document.querySelectorAll('a[href*="discord.gg"]');
+            discordLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // Try to open Discord app if installed
+                    const discordAppUrl = `discord://discord.gg/BDRdG4X8w3`;
+                    setTimeout(() => {
+                        window.location.href = discordAppUrl;
+                    }, 500);
+                });
+            });
+        });
     </script>
 </body>
 </html>
